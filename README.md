@@ -3,3 +3,6 @@ In an attempt to learn more about git, I have tried to implement some of it's co
 
 # Commands
 - init
+
+# Heavily influenced by
+- https://benhoyt.com/writings/pygit/
