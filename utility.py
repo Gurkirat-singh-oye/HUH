@@ -6,5 +6,5 @@ def write_file (file, data):
     f.close()
 
 def read_file (file):
-    f = open(file, "r")
+    f = open(file, "rb")
     return (f.read())
