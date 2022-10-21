@@ -10,6 +10,6 @@ what better way to understand something than to make one yourself.
 - functionality of cat-file is limited
 
 # Heavily influenced by (resources used)
-- https://www.youtube.com/watch?v=fCtZWGhQBvo awesome explanation
-- https://benhoyt.com/writings/pygit/
-- https://wyag.thb.lt/#org29d273c
+- [Awesome explanation](https://www.youtube.com/watch?v=fCtZWGhQBvo) 
+- [Bare Bones git by benhoyt](https://benhoyt.com/writings/pygit/)
+- [Write yourself a Git](https://wyag.thb.lt/#org29d273c)
