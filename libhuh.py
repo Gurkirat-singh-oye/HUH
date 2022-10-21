@@ -39,8 +39,7 @@ def read_index():
     except Exception as e:
         return e
     
-    # digest = hashlib.sha1(data[:-20]).digest()
-    # sign, vers, ents = struct.unpack( "!4sLL", data[:12])
+    # some checks were skipped
 
     entry_data = data[12:-20]
     entries = []
@@ -79,7 +78,6 @@ def hash_object(data, obj_type, write=True):
     return sha1
 
 
-
 def find_object(given_hash, dir=""):
     dir = os.path.join(dir, ".git", "objects")
     tmp = []
@@ -89,28 +87,49 @@ def find_object(given_hash, dir=""):
             for two_hashes_end in os.listdir(os.path.join(dir, hash_prefix)):
                 if given_hash[2:len(given_hash)] == two_hashes_end[:len(given_hash)-2]:
                     return os.path.join(dir, hash_prefix, two_hashes_end)
-    return ""
+    return "nah!"
+
+def read_object(sha1_prefix):
+    path = find_object(sha1_prefix)
+    full_data = zlib.decompress(read_file(path))
+    nul_index = full_data.index(b'\x00')
+    header = full_data[:nul_index]
+    obj_type, size_str = header.decode().split()
+    size = int(size_str)
+    data = full_data[nul_index + 1:]
+    assert size == len(data), 'expected size {}, got {} bytes'.format(
+            size, len(data))
+    return (obj_type, data)
 
 
-def read_object(object_file_path):
-    z_comp_data = read_file(object_file_path)
-    obj_data = zlib.decompress(z_comp_data)
-    tmp_tuple = tuple(obj_data.split(b'\x00', 1))
-    header, data = tmp_tuple[0], tmp_tuple[1]
-    header = header.decode()
-    return header, data
+def read_tree(sha1=None, data=None):
+    """
+        things were ignored for simplicity - no mention of object type
+    """
+    if sha1 is not None:
+        obj_type, data = read_object(sha1)
+        assert obj_type == 'tree'
+    elif data is None:
+        raise TypeError('must specify "sha1" or "data"')
+    i = 0
+    entries = []
+    for _ in range(1000):
+        end = data.find(b'\x00', i)
+        if end == -1:
+            break
+        mode_str, path = data[i:end].decode().split()
+        mode = int(mode_str, 8)
+        digest = data[end + 1:end + 21]
+        entries.append((mode, path, digest.hex()))
+        i = end + 1 + 20
+    return entries
 
 
 def cat_file( hash):
-    obj_file = find_object(hash) #dir parameter?
-    if obj_file == "":
-        print("Object does not exist or invalid hash")
-        return
-    # if param != "-p":
-    #     print("'-p' was not used, use it next time")
-    data_list = read_object(obj_file)
-    # print(data_list[0])
-    print(data_list[1].decode(errors='ignore'))
+    (obj_type, data) = read_object(hash)
+    print(obj_type)
+    for a in read_tree(data=data):
+        print(a)
 
 
 def add():
