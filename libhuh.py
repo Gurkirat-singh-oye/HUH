@@ -9,7 +9,8 @@ argsubp.required = True
 def main(argv=sys.argv[1:]):
     # args = argp.parse_args(argv)
     if   argv[0] == "init"        : init("." if len(argv) == 1 else argv[1])
-    elif argv[0] == "cat-file"    : cat_file(hash=argv[1]) # need to add parameters
+    elif argv[0] == "cat-file"    : cat_file(hash=argv[1])  # need to add parameters
+    elif argv[0] == "ls-files"    : ls_files()              # need to add details flag
 
 IndexEntry = collections.namedtuple('IndexEntry', [
     'ctime_s', 'ctime_n', 'mtime_s', 'mtime_n', 'dev', 'ino', 'mode',
