@@ -9,8 +9,11 @@ argsubp.required = True
 def main(argv=sys.argv[1:]):
     # args = argp.parse_args(argv)
     if   argv[0] == "init"        : init("." if len(argv) == 1 else argv[1])
-    elif argv[0] == "cat-file"    : cat_file(hash=argv[1])  # need to add parameters
+    elif argv[0] == "cat-file"    : cat_file(hash=argv[1])  # need to add parameters, just dont use any flags
     elif argv[0] == "ls-files"    : ls_files()              # need to add details flag
+
+    else :
+        print("future me will definetly implement this")
 
 IndexEntry = collections.namedtuple('IndexEntry', [
     'ctime_s', 'ctime_n', 'mtime_s', 'mtime_n', 'dev', 'ino', 'mode',
@@ -128,9 +131,8 @@ def read_tree(sha1=None, data=None):
 
 def cat_file( hash):
     (obj_type, data) = read_object(hash)
-    print(obj_type)
     for a in read_tree(data=data):
-        print(a)
+        print(a[0], obj_type, a[2], a[1])
 
 
 def add():
