@@ -1,4 +1,5 @@
 import argparse, collections, configparser, hashlib, os, re, sys, zlib
+import subprocess
 import struct
 from utility import *
 
@@ -11,6 +12,7 @@ def main(argv=sys.argv[1:]):
     if   argv[0] == "init"        : init("." if len(argv) == 1 else argv[1])
     elif argv[0] == "cat-file"    : cat_file(hash=argv[1])  # need to add parameters, just dont use any flags
     elif argv[0] == "ls-files"    : ls_files()              # need to add details flag
+    elif argv[0] == "status"      : get_status()
 
     else :
         print("future me will definetly implement this")
@@ -133,6 +135,24 @@ def cat_file( hash):
     (obj_type, data) = read_object(hash)
     for a in read_tree(data=data):
         print(a[0], obj_type, a[2], a[1])
+
+
+def get_status():
+    commited_files = []
+    not_traced = []
+    curr_dir = subprocess.run(["ls"], capture_output=True).stdout.decode().splitlines()
+    for en in read_index():
+        commited_files = {en.path : "y"}
+    
+    for file in curr_dir:
+        try:
+            commited_files[file]
+        except KeyError:
+            not_traced.append(file)
+
+    print("huh have no idea what these files are :")
+    for a in not_traced:
+        print("\t", a)
 
 
 def add():
