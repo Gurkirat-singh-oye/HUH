@@ -62,12 +62,15 @@ def read_index():
 
 
 def ls_files(details=False):
-    for entry in read_index():
-        if details:
-            stage = (entry.flags >> 12) & 3
-            print(f'? {entry.sha1.hex()} ?{stage}?\t{entry.path}')
-        else:
-            print(entry.path)
+    try:
+        for entry in read_index():
+            if details:
+                stage = (entry.flags >> 12) & 3
+                print(f'? {entry.sha1.hex()} ?{stage}?\t{entry.path}')
+            else:
+                print(entry.path)
+    except FileNotFoundError:
+        print("Either there hasnt been any commits or something is wrong")
 
 
 def hash_object(data, obj_type, write=True):
