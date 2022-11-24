@@ -10,7 +10,7 @@ argsubp.required = True
 def main(argv=sys.argv[1:]):
     # args = argp.parse_args(argv)
     if   argv[0] == "init"        : init("." if len(argv) == 1 else argv[1])
-    elif argv[0] == "cat-file"    : cat_file(hash=argv[1])  # need to add parameters, just dont use any flags
+    elif argv[0] == "cat-file"    : cat_file(hash=argv[-1], mode=argv[1])  # need to add parameters, just dont use any flags
     elif argv[0] == "ls-files"    : ls_files()              # need to add details flag
     elif argv[0] == "status"      : get_status()
 
@@ -111,6 +111,7 @@ def read_object(sha1_prefix):
     return (obj_type, data)
 
 
+##  where write tree -- helps in commiting changes
 def read_tree(sha1=None, data=None):
     """
         things were ignored for simplicity - no mention of object type
@@ -134,10 +135,25 @@ def read_tree(sha1=None, data=None):
     return entries
 
 
-def cat_file( hash):
+##  mode here |v| is the type of object
+def cat_file(hash, mode):
     (obj_type, data) = read_object(hash)
-    for a in read_tree(data=data):
-        print(a[0], obj_type, a[2], a[1])
+
+    if hash == mode:
+        mode = ""
+
+    if mode in ["commit", "tree", "blob", ""]:
+        if obj_type!=mode:
+            print("huh!!!, type mis-match broda...")
+            try:
+                print(data.decode())
+            except UnicodeDecodeError:
+                pass
+
+        for a in read_tree(data=data):
+            print(a[0], obj_type, a[2], a[1])
+    else:
+        print("nope, wrong mode/type? idk what i am doing...")
 
 
 def get_status():
